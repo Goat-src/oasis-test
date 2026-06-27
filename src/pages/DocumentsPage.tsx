@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { api } from '../lib/api'
 
 interface Document {
@@ -28,20 +28,22 @@ const btnStyle: React.CSSProperties = {
 }
 
 export default function DocumentsPage() {
-  const [docs, setDocs]           = useState<Document[]>([])
-  const [selected, setSelected]   = useState<Document | null>(null)
-  const [versions, setVersions]   = useState<Version[]>([])
-  const [showForm, setShowForm]   = useState(false)
-  const [title, setTitle]         = useState('')
+  const [docs, setDocs]         = useState<Document[]>([])
+  const [selected, setSelected] = useState<Document | null>(null)
+  const [versions, setVersions] = useState<Version[]>([])
+  const [showForm, setShowForm] = useState(false)
+  const [title, setTitle]       = useState('')
 
-  const loadDocs = () => api.get('/files/documents').then(r => setDocs(r.data))
+  const loadDocs = useCallback(() => {
+    api.get('/files/documents').then(r => setDocs(r.data))
+  }, [])
 
-  useEffect(() => { loadDocs() }, [])
+  useEffect(() => { loadDocs() }, [loadDocs])
 
-  const selectDoc = (doc: Document) => {
+  const selectDoc = useCallback((doc: Document) => {
     setSelected(doc)
     api.get(`/files/documents/${doc.id}/versions`).then(r => setVersions(r.data))
-  }
+  }, [])
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -67,8 +69,13 @@ export default function DocumentsPage() {
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
           <h1 style={{ fontSize: 20, fontWeight: 600 }}>文書管理</h1>
-          <button style={{ ...btnStyle, background: '#238636', borderColor: '#238636' }}
-            onClick={() => setShowForm(v => !v)}>＋</button>
+          <button
+            type="button"
+            style={{ ...btnStyle, background: '#238636', borderColor: '#238636' }}
+            onClick={() => setShowForm(v => !v)}
+          >
+            ＋
+          </button>
         </div>
 
         {showForm && (
@@ -81,16 +88,28 @@ export default function DocumentsPage() {
 
         <div style={{ background: '#161b22', border: '1px solid #21262d', borderRadius: 8, overflow: 'hidden' }}>
           {docs.map(doc => (
-            <div key={doc.id}
+            <button
+              key={doc.id}
+              type="button"
               onClick={() => selectDoc(doc)}
               style={{
-                padding: '10px 14px', cursor: 'pointer', fontSize: 13,
+                display: 'block',
+                width: '100%',
+                textAlign: 'left',
+                padding: '10px 14px',
+                cursor: 'pointer',
+                fontSize: 13,
                 borderBottom: '1px solid #21262d',
+                border: 'none',
+                borderBottomWidth: 1,
+                borderBottomStyle: 'solid' as const,
+                borderBottomColor: '#21262d',
                 background: selected?.id === doc.id ? '#21262d' : 'transparent',
                 color: selected?.id === doc.id ? '#e6edf3' : '#8b949e',
-              }}>
+              }}
+            >
               {doc.title}
-            </div>
+            </button>
           ))}
           {docs.length === 0 && (
             <div style={{ padding: 16, fontSize: 13, color: '#8b949e' }}>文書がありません</div>
@@ -120,8 +139,8 @@ export default function DocumentsPage() {
                       <td style={{ padding: '10px 16px', color: '#8b949e' }}>{new Date(v.uploaded_at).toLocaleString('ja-JP')}</td>
                       <td style={{ padding: '10px 16px' }}>
                         {v.deleted_at
-                          ? <button style={btnStyle} onClick={() => handleRestore(v.id)}>復元</button>
-                          : <button style={{ ...btnStyle, borderColor: '#f85149', color: '#f85149' }}
+                          ? <button type="button" style={btnStyle} onClick={() => handleRestore(v.id)}>復元</button>
+                          : <button type="button" style={{ ...btnStyle, borderColor: '#f85149', color: '#f85149' }}
                               onClick={() => handleDelete(v.id)}>削除</button>
                         }
                       </td>

@@ -58,6 +58,7 @@ export default function Sidebar() {
 
       <div style={{ padding: '12px 8px', borderTop: '1px solid #21262d' }}>
         <button
+          type="button"
           onClick={handleSignOut}
           style={{
             width: '100%',

@@ -19,7 +19,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
           navigate('/onboarding')
         }
       })
-  }, [user, loading])
+  }, [user, loading, navigate])
 
   if (!checked) return null
   return <>{children}</>

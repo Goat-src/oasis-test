@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { api } from '../lib/api'
 
 interface PaymentRequest {
@@ -39,16 +39,18 @@ export default function AccountingPage() {
   const [showForm, setShowForm] = useState(false)
   const [form, setForm]         = useState<CreateForm>({ description: '', payee: '', amount: '' })
 
-  const load = () => api.get('/accounting/payments').then(r => setPayments(r.data))
+  const load = useCallback(() => {
+    api.get('/accounting/payments').then(r => setPayments(r.data))
+  }, [])
 
-  useEffect(() => { load() }, [])
+  useEffect(() => { load() }, [load])
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
     await api.post('/accounting/payments', {
       ...form,
       amount: parseFloat(form.amount),
-      requested_by: '00000000-0000-0000-0000-000000000000', // 実装時は認証ユーザーの ID に差し替え
+      requested_by: '00000000-0000-0000-0000-000000000000',
     })
     setShowForm(false)
     setForm({ description: '', payee: '', amount: '' })
@@ -69,8 +71,13 @@ export default function AccountingPage() {
     <>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 24 }}>
         <h1 style={{ fontSize: 20, fontWeight: 600 }}>会計管理 — 支払申請</h1>
-        <button style={{ ...btnStyle, background: '#238636', borderColor: '#238636' }}
-          onClick={() => setShowForm(v => !v)}>＋ 申請</button>
+        <button
+          type="button"
+          style={{ ...btnStyle, background: '#238636', borderColor: '#238636' }}
+          onClick={() => setShowForm(v => !v)}
+        >
+          ＋ 申請
+        </button>
       </div>
 
       {showForm && (
@@ -127,10 +134,20 @@ export default function AccountingPage() {
                   <td style={{ padding: '10px 16px' }}>
                     {p.status === 'pending' && (
                       <div style={{ display: 'flex', gap: 6 }}>
-                        <button style={{ ...btnStyle, borderColor: '#3fb950', color: '#3fb950' }}
-                          onClick={() => handleApprove(p.id)}>承認</button>
-                        <button style={{ ...btnStyle, borderColor: '#f85149', color: '#f85149' }}
-                          onClick={() => handleReject(p.id)}>却下</button>
+                        <button
+                          type="button"
+                          style={{ ...btnStyle, borderColor: '#3fb950', color: '#3fb950' }}
+                          onClick={() => handleApprove(p.id)}
+                        >
+                          承認
+                        </button>
+                        <button
+                          type="button"
+                          style={{ ...btnStyle, borderColor: '#f85149', color: '#f85149' }}
+                          onClick={() => handleReject(p.id)}
+                        >
+                          却下
+                        </button>
                       </div>
                     )}
                   </td>

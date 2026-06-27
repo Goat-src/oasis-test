@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { api } from '../lib/api'
 
 interface User {
@@ -51,10 +51,13 @@ export default function UsersPage() {
     joined_at: new Date().toISOString().slice(0, 10),
   })
 
-  const load = (name?: string) =>
+  // 警告解消のため useCallback で関数をメモ化
+  const load = useCallback((name?: string) => {
     api.get('/users', { params: { name } }).then(r => setUsers(r.data))
+  }, [])
 
-  useEffect(() => { load() }, [])
+  // load を依存配列に追加
+  useEffect(() => { load() }, [load])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
@@ -83,11 +86,13 @@ export default function UsersPage() {
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 24 }}>
         <h1 style={{ fontSize: 20, fontWeight: 600 }}>利用者管理</h1>
         <div style={{ display: 'flex', gap: 8 }}>
-          <button style={btnStyle} onClick={() => fileRef.current?.click()}>
+          {/* type="button" を追加 */}
+          <button type="button" style={btnStyle} onClick={() => fileRef.current?.click()}>
             CSV インポート
           </button>
           <input ref={fileRef} type="file" accept=".csv" style={{ display: 'none' }} onChange={handleCsvImport} />
-          <button style={{ ...btnStyle, background: '#238636', borderColor: '#238636' }}
+          {/* type="button" を追加 */}
+          <button type="button" style={{ ...btnStyle, background: '#238636', borderColor: '#238636' }}
             onClick={() => setShowForm(v => !v)}>
             ＋ 利用者を追加
           </button>
