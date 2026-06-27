@@ -30,7 +30,7 @@ export default function Sidebar() {
     }}>
       <div style={{ padding: '0 16px 24px', borderBottom: '1px solid #21262d' }}>
         <span style={{ color: '#e6edf3', fontWeight: 600, fontSize: 15 }}>
-          ftn-oasis
+          oasis-test
         </span>
       </div>
 

@@ -20,7 +20,7 @@ function Onboarding() {
 
 export default function App() {
   return (
-    <BrowserRouter basename="/ftn-oasis">
+    <BrowserRouter basename="/oasis-test">
       <Routes>
         <Route path="/login"      element={<LoginPage />} />
         <Route path="/onboarding" element={<Onboarding />} />

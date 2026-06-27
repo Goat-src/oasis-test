@@ -12,6 +12,12 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     if (loading) return
     if (!user) { navigate('/login'); return }
 
+    // ローカル開発時は /users/me チェックをスキップ
+    if (import.meta.env.DEV) {
+      setChecked(true)
+      return
+    }
+
     api.get('/users/me')
       .then(() => setChecked(true))
       .catch((e) => {
