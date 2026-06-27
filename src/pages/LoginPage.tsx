@@ -29,7 +29,7 @@ export default function LoginPage() {
       height: '100vh', gap: 16,
       background: '#0d1117', color: '#e6edf3',
     }}>
-      <h1 style={{ fontSize: 24, fontWeight: 600 }}>ftn-oasis</h1>
+      <h1 style={{ fontSize: 24, fontWeight: 600 }}>oasis-test</h1>
       <button
         type="button"
         onClick={handleLogin}

@@ -47,7 +47,10 @@ export default function DocumentsPage() {
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault()
-    await api.post('/files/documents', { title })
+    await api.post('/files/documents', {
+      title,
+      created_by: '00000000-0000-0000-0000-000000000000', // ローカルテスト用仮UUID
+    })
     setShowForm(false)
     setTitle('')
     loadDocs()

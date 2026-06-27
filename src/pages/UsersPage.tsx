@@ -64,13 +64,24 @@ export default function UsersPage() {
     load(search || undefined)
   }
 
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault()
-    await api.post('/users', form)
+const handleCreate = async (e: React.FormEvent) => {
+  e.preventDefault()
+  console.log('送信データ:', {
+    ...form,
+    user_type_id: Number(form.user_type_id),
+  })
+  try {
+    const res = await api.post('/users', {
+      ...form,
+      user_type_id: Number(form.user_type_id),
+    })
+    console.log('レスポンス:', res.data)
     setShowForm(false)
     load()
+  } catch (e) {
+    console.error('エラー:', e)
   }
-
+}
   const handleCsvImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
