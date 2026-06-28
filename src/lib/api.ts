@@ -9,6 +9,7 @@ api.interceptors.request.use(async (config) => {
   const user = auth.currentUser
   if (user) {
     const token = await user.getIdToken(true)
+    console.log('TOKEN:', token)
     config.headers.Authorization = `Bearer ${token}`
   }
   return config
